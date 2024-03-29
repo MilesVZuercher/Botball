@@ -1,0 +1,55 @@
+#include <kipr/wombat.h>
+
+int main(){
+    int white = 200;
+    int black = 3000;
+    int grey_area = (white + black) / 2;
+    int small_tophat_grey_area = 3950;
+    //int seconds = 0;
+    //time = seconds();
+    
+
+
+        // This is making the robot move to the black line with both sensors (A0, and A2)
+        while( ( analog(0) <= grey_area)  &&  ( analog(2) <= grey_area ) ){
+            motor(0, 93);
+            motor(1, 100);
+        }
+
+
+        // this is useed to debug and make sure the robot is actually sensing the black line
+        ao();
+        msleep(2000);
+
+
+
+
+
+
+        while( ( analog(0) >= grey_area)  &&  ( analog(2) >= grey_area ) ){
+            motor(0, 93);
+            motor(1, 100);
+        }
+        ao();
+        msleep(2000);
+
+
+
+        // This is making the robot move to the black line with both sensors (A0, and A2)
+
+        while( ( analog(0) <= grey_area)  &&  ( analog(2) <= grey_area ) ){
+            motor(0, 93);
+            motor(1, 100);
+            
+        }
+
+
+        // this is useed to debug and make sure the robot is actually sensing the black line
+        ao();
+        msleep(2000);
+
+
+
+    
+    return 0;
+}
