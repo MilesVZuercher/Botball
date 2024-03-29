@@ -1,0 +1,101 @@
+#include <kipr/wombat.h>
+
+void  UntilBump (void);
+void BlackLineInstruction(int count, double);
+void WhiteLineInstruction(int count, double);
+int BlackWhiteCal(void); 
+
+int main()
+{
+
+create3_connect();
+  double  white = BlackWhiteCal(); // finds a pretty accurate white value
+WhiteLineInstruction(1, white); // on first white its gonna go forward until black 
+BlackLineInstruction(1, white);// on first black its gonna go forward until next white 
+WhiteLineInstruction(1, white);// second white, will stop once its reached black 
+create3_rotate_degrees(90,10); // rotate 90 onto rock line 
+    create3_drive_straight(0,.2); 
+WhiteLineInstruction(1,white); // moving on white up the rock line until it meets the intersection at the pom poms
+create3_rotate_degrees(90,10); // rotate 90 degrees on to pom line 
+UntilBump (); // drives forward until bumps 
+      create3_drive_straight(-.2,.2); // give a bit of room off the noodle 
+create3_rotate_degrees(90,10); // turn to the right 
+    create3_drive_straight(.2,.2); // move forward
+    create3_drive_straight(-.2,.2); // "drop poms" and move back 
+    create3_rotate_degrees(-180,10); // turn to the left 
+    create3_drive_straight(.2,.2); // move forward
+    create3_drive_straight(-.2,.2); // "drop poms" and move back 
+     create3_rotate_degrees(-90,10); // turn around 
+	UntilBump();// go until hitting the far wall
+     create3_rotate_degrees(-180,10); // turn back 
+    WhiteLineInstruction(1,white);// go until hitting the black line 
+     create3_rotate_degrees(90,10); // turn tword purple noodle drop 
+    UntilBump();// drive until purple noodle drop aread hit
+     create3_drive_straight(-.1,.2); // take a little step back 
+    create3_rotate_degrees(-90,10); // turn twords the start
+        UntilBump ();// drive until start walls hit
+         create3_drive_straight(-.5,.2); // little scootch back 
+     create3_rotate_degrees(180,10); // back to start postion 
+   
+create3_wait(); 
+}
+
+void BlackLineInstruction(int count, double white)
+{
+       
+if ( count == 0) 
+{ 
+} 
+else
+{
+while ( create3_sensor_cliff(0)  <= white - 20 ) 
+{
+create3_velocity_set_components(0.3, 0);
+}
+        printf("%i\n", create3_sensor_cliff(0)); 
+}
+
+}
+
+void WhiteLineInstruction(int count, double white)
+{
+
+if ( count == 0) 
+{ 
+} 
+else
+{
+while ( create3_sensor_cliff(0)  >= white - 20 ) 
+{
+create3_velocity_set_components(0.3,0);
+}
+    printf("%i\n", create3_sensor_cliff(0)); 
+}
+
+}
+
+int BlackWhiteCal() 
+{
+double white = 0; 
+int count = 0; 
+while ( count < 10) 
+{
+double newwhite = create3_sensor_cliff(0);
+white  = white + newwhite;
+count++; 
+} 
+ white = white/(double) count;  
+    printf("%lf",white); 
+return white; 
+    
+}
+void  UntilBump ()
+{ 
+while ( create3_sensor_bump(0)  == 0 && create3_sensor_bump(1)  == 0 && create3_sensor_bump(2)  == 0 &&  create3_sensor_bump(3)  == 0 &&  create3_sensor_bump(4)  == 0)
+{
+create3_velocity_set_components(0.1, 0);
+}
+}
+
+
+
