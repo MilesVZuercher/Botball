@@ -1,0 +1,59 @@
+#include <kipr/wombat.h>
+
+int main() {
+  camera_open();
+  create3_connect ();
+  int hi = get_motor_position_counter(0);
+  printf("%i\n", motor);
+  int yvalue = 0;
+  while (1) {
+     yvalue = get_object_center_y(0, 0);
+    printf("%i", yvalue);
+    console_clear();
+    camera_update();
+    int xvalue = get_object_center_x(0, 0);
+    yvalue = get_object_center_y(0, 0);
+    printf("%i", yvalue);
+
+    while (yvalue > 280) {
+        /*
+      if (xvalue > 320) {
+        create3_velocity_set_components(0, .2);
+      }
+      if (xvalue < 320 && xvalue > 0) {
+        create3_velocity_set_components(0, -.2);
+      }
+        */
+      console_clear();
+      puts("going down");
+      motor(0, -10);
+      msleep(50);
+
+      camera_update();
+      yvalue = get_object_center_y(0, 0);
+      xvalue = get_object_center_x(0, 0);
+    }
+    while (yvalue < 280 && yvalue > 0) {
+     /* if (xvalue > 320) {
+        create3_velocity_set_components(0, .2);
+      }
+      if (xvalue < 320 && xvalue > 0) {
+        create3_velocity_set_components(0, -.2);
+      }*/
+      console_clear();
+      puts("going up");
+      motor(0, 10);
+      msleep(50);
+
+      camera_update();
+      yvalue = get_object_center_y(0, 0);
+      xvalue = get_object_center_x(0, 0);
+    }
+    motor(0, 0);
+  }
+  camera_close();
+  ao();
+
+  /*create3_wait();*/
+  return 0;
+}
