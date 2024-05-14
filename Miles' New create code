@@ -1,0 +1,442 @@
+#include <kipr/wombat.h>
+
+#define Black 999
+#define White 111
+
+typedef struct 
+{
+    int white0, white1, white2, white3; 
+    int noise0, noise1, noise2, noise3; 
+} CliffSensor;
+
+void SensorPrinter();
+void DriveUntilColor(int Color, CliffSensor, int sensor); 
+void TurnToColor(int Color, CliffSensor, int sensor);
+void Center(CliffSensor);
+CliffSensor BlackWhiteCalibration()
+{
+   CliffSensor Cliff; 
+   Cliff.white0 = 0; 
+   Cliff.noise0 = 0; 
+       Cliff.white1 = 0; 
+   Cliff.noise1 = 0; 
+      Cliff.white2 = 0; 
+   Cliff.noise2 = 0; 
+      Cliff.white3 = 0; 
+   Cliff.noise3 = 0; 
+   int top = 0; 
+   int bottom = 0; 
+    int arr[10];
+   for( int i = 0; i < 10; i++)
+   {
+       msleep(100);
+       arr[i] = create3_sensor_cliff(0);
+       Cliff.white0 = Cliff.white0 + create3_sensor_cliff(0);
+   }
+       Cliff.white0 = Cliff.white0/10; 
+   for( int i = 0; i < 10; i++)
+   {
+       if (i != 0)
+       {
+           
+           if (arr[i] > arr[i-1 ])
+           {
+               
+ 				top =  arr[i];
+               
+           }
+           else 
+           {
+               
+  				bottom = arr[i];
+               
+           }    
+           
+       }
+       else
+       {
+           
+          top =  arr[i];
+           
+          bottom = arr[i];
+           
+       }
+           
+   }
+     for( int i = 0; i < 10; i++)
+   {
+         arr[i] = 0; 
+   }
+		Cliff.noise0 = top - bottom; 
+    printf("the average white value for the left most sensor is %i\n", Cliff.white0); 
+    printf("the noise for the left most sensor is %i\n", Cliff.noise0); 
+   	top = 0; 
+    bottom = 0; 
+      // SENSOR 1
+     for( int i = 0; i < 10; i++)
+   {
+       msleep(100);
+       arr[i] = create3_sensor_cliff(1);
+       Cliff.white1 = Cliff.white1 + create3_sensor_cliff(1);
+   }
+       Cliff.white1 = Cliff.white1/10; 
+   for( int i = 0; i < 10; i++)
+   {
+       if (i != 0)
+       {
+           
+           if (arr[i] > arr[i-1 ])
+           {
+               
+ 				top =  arr[i];
+               
+           }
+           else 
+           {
+               
+  				bottom = arr[i];
+               
+           }    
+           
+       }
+       else
+       {
+           
+          top =  arr[i];
+           
+          bottom = arr[i];
+           
+       }
+           
+   }
+     for( int i = 0; i < 10; i++)
+   {
+         arr[i] = 0; 
+   }
+		Cliff.noise1 = top - bottom; 
+    printf("the average white value for the mid left sensor is %i\n", Cliff.white1); 
+    printf("the noise for the mid left sensor is %i\n", Cliff.noise1); 
+   	top = 0; 
+    bottom = 0; 
+    //SENSOR 2
+    for( int i = 0; i < 10; i++)
+   {
+       msleep(100);
+       arr[i] = create3_sensor_cliff(2);
+       Cliff.white2 = Cliff.white2 + create3_sensor_cliff(2);
+   }
+       Cliff.white2 = Cliff.white2/10; 
+   for( int i = 0; i < 10; i++)
+   {
+       if (i != 0)
+       {
+           
+           if (arr[i] > arr[i-1 ])
+           {
+               
+ 				top =  arr[i];
+               
+           }
+           else 
+           {
+               
+  				bottom = arr[i];
+               
+           }    
+           
+       }
+       else
+       {
+           
+          top =  arr[i];
+           
+          bottom = arr[i];
+           
+       }
+           
+   }
+     for( int i = 0; i < 10; i++)
+   {
+         arr[i] = 0; 
+   }
+		Cliff.noise2 = top - bottom; 
+    printf("the average white value for the mid right sensor is %i\n", Cliff.white2);  // ask
+    printf("the noise for the  mid right sensor is %i\n", Cliff.noise2); 
+   	top = 0; 
+    bottom = 0; 
+    //SENSOR 3 
+    for( int i = 0; i < 10; i++)
+   {
+       msleep(100);
+       arr[i] = create3_sensor_cliff(3);
+       Cliff.white3 = Cliff.white3 + create3_sensor_cliff(3);
+   }
+       Cliff.white3 = Cliff.white3/10; 
+   for( int i = 0; i < 10; i++)
+   {
+       if (i != 0)
+       {
+           
+           if (arr[i] > arr[i-1 ])
+           {
+               
+ 				top =  arr[i];
+               
+           }
+           else 
+           {
+               
+  				bottom = arr[i];
+               
+           }    
+           
+       }
+       else
+       {
+           
+          top =  arr[i];
+           
+          bottom = arr[i];
+           
+       }
+           
+   }
+     for( int i = 0; i < 10; i++)
+   {
+         arr[i] = 0; 
+   }
+		Cliff.noise3 = top - bottom; 
+    printf("the average white value for the right most sensor is %i\n", Cliff.white3); 
+    printf("the noise for the right most sensor is %i\n", Cliff.noise3); 
+   	top = 0; 
+    bottom = 0; 
+    return Cliff; 
+}
+int main()
+{
+    create3_connect(); 
+    CliffSensor Cliff = BlackWhiteCalibration();
+      while((create3_sensor_cliff(0) > (Cliff.white0  - (Cliff.noise0 + 5))) && (create3_sensor_cliff(3) > (Cliff.white3  - (Cliff.noise3 + 5))))
+    {
+          
+             create3_velocity_set_components (.1, 0.3);
+         
+    }    
+    Center(Cliff);
+    console_clear();
+    puts("got to first black line");
+       DriveUntilColor(White, Cliff,3);
+        console_clear();
+     puts("passed first black line");
+       DriveUntilColor(Black, Cliff,3);
+     console_clear();
+     puts(" reached second black line");
+       TurnToColor(White, Cliff, 3);
+         console_clear();
+     puts("1");
+     TurnToColor(Black, Cliff, 3); // fix color swaped 
+     console_clear();
+     puts("2");
+     TurnToColor(White, Cliff, 3);
+     console_clear();
+     puts("3");
+   TurnToColor(White, Cliff, 2);
+     console_clear();
+     puts("4");
+   	create3_wait(); 
+    return 0;
+}
+
+void SensorPrinter()
+{
+   console_clear();
+    puts("CLIFF:");
+   printf("cliff left most value: %i\n", create3_sensor_cliff(0));
+   printf("cliff mid left value: %i\n",create3_sensor_cliff(1));
+   printf("cliff mid right value: %i\n",create3_sensor_cliff(2));
+   printf("cliff right most value: %i\n",create3_sensor_cliff(3));	
+    puts("BUMP:");
+   printf("cliff mid left value: %i\n", create3_sensor_bump(0));
+   printf("cliff mid right value: %i\n", create3_sensor_bump(1));
+   printf("cliff right most value: %i\n", create3_sensor_bump(2));
+   printf("cliff right most value: %i\n", create3_sensor_bump(3));
+    
+}
+
+void DriveUntilColor(int Color, CliffSensor Cliff, int sensor)
+{
+    
+  if (Color == White)
+  {       switch (sensor)
+       {
+           case 0:
+               while ((Cliff.white0  - (Cliff.noise0 + 5)) > create3_sensor_cliff(0) )
+                      { 
+                   SensorPrinter();
+                           create3_velocity_set_components (0.1, 0);
+                      }
+               break; 
+           case 1:
+               while ((Cliff.white1  -  (Cliff.noise1 + 5 )) > create3_sensor_cliff(1) ) 
+                      {
+                    SensorPrinter();
+                           create3_velocity_set_components (0.1, 0);
+                      }
+               break; 
+                case 2:
+               while ((Cliff.white2  - (Cliff.noise2 + 5)) > create3_sensor_cliff(2) )
+                      {      
+ 							SensorPrinter();
+                           create3_velocity_set_components (0.1, 0);
+                      }
+               break; 
+                case 3:
+               while ((Cliff.white3  - (Cliff.noise3 + 5)) > create3_sensor_cliff(3) )
+                      {
+                    		SensorPrinter();
+                           create3_velocity_set_components (0.1, 0);
+                      }
+               break; 
+           default:
+               puts("sorry not a sensor");
+               break;
+          
+       }
+  }
+  if (Color == Black)
+  {
+      if (Color == Black)
+  {       switch (sensor)
+       {
+           case 0:
+               while (create3_sensor_cliff(0) > (Cliff.white0  - (Cliff.noise0 + 5)))
+                      {
+                   			 SensorPrinter();
+                           create3_velocity_set_components (0.1, 0);
+                      }
+               break; 
+           case 1:
+               while (  create3_sensor_cliff(1) >  Cliff.white1  - (Cliff.noise1 + 5))
+                      {
+                    		SensorPrinter();
+                           create3_velocity_set_components (0.1, 0);
+                      }
+               break; 
+                case 2:
+               while (create3_sensor_cliff(2) > (Cliff.white2  - (Cliff.noise2 + 5))  )
+                      {
+                   		 SensorPrinter();
+                           create3_velocity_set_components (0.1, 0);
+                      }
+               break; 
+                case 3:
+               while (create3_sensor_cliff(3) > (Cliff.white3  - (Cliff.noise3 + 5)) )
+                      {		 SensorPrinter();
+                           create3_velocity_set_components (0.1, 0);
+                      }
+               break; 
+           default:
+               puts("sorry not a sensor");
+               break;
+          
+       }
+  }
+  } 
+
+}
+    void TurnToColor( int Color, CliffSensor Cliff, int sensor)
+    {
+         if (Color == White)
+  {       switch (sensor)
+       {
+           case 0:
+               while ((Cliff.white0  - (Cliff.noise0 + 5)) > create3_sensor_cliff(0) )
+                      { 
+                   SensorPrinter();
+                           create3_velocity_set_components (0, 0.1);
+                      }
+               break; 
+           case 1:
+               while ((Cliff.white1  -  (Cliff.noise1 + 5 )) > create3_sensor_cliff(1) ) 
+                      {
+                    SensorPrinter();
+                           create3_velocity_set_components (0, 0.1);
+                      }
+               break; 
+                case 2:
+               while ((Cliff.white2  - (Cliff.noise2 + 5)) > create3_sensor_cliff(2) )
+                      {      
+ 							SensorPrinter();
+                           create3_velocity_set_components (0, 0.1);
+                      }
+               break; 
+                case 3:
+               while ((Cliff.white3  - (Cliff.noise3 + 5)) > create3_sensor_cliff(3) )
+                      {
+                    		SensorPrinter();
+                           create3_velocity_set_components (0, 0.1);
+                      }
+               break; 
+           default:
+               puts("sorry not a sensor");
+               break;
+          
+       }
+  }
+  if (Color == Black)
+  {
+      if (Color == Black)
+  {       switch (sensor)
+       {
+           case 0:
+               while (create3_sensor_cliff(0) > (Cliff.white0  - (Cliff.noise0 + 5)))
+                      {
+                   			 SensorPrinter();
+                           create3_velocity_set_components (0, 0.1);
+                      }
+               break; 
+           case 1:
+               while (  create3_sensor_cliff(1) >  Cliff.white1  - (Cliff.noise1 + 5))
+                      {
+                    		SensorPrinter();
+                           create3_velocity_set_components (0, 0.1);
+                      }
+               break; 
+                case 2:
+               while (create3_sensor_cliff(2) > (Cliff.white2  - (Cliff.noise2 + 5))  )
+                      {
+                   		 SensorPrinter();
+                           create3_velocity_set_components (0, 0.1);
+                      }
+               break; 
+                case 3:
+               while (create3_sensor_cliff(3) > (Cliff.white3  - (Cliff.noise3 + 5)) )
+                      {		 SensorPrinter();
+                           create3_velocity_set_components (0, 0.1);
+                      }
+               break; 
+           default:
+               puts("sorry not a sensor");
+               break;
+          
+       }
+  }
+  } 
+
+    }
+
+void Center(CliffSensor Cliff)
+{
+    while((create3_sensor_cliff(0) > (Cliff.white0  - (Cliff.noise0 + 5))) ||(create3_sensor_cliff(3) > (Cliff.white3  - (Cliff.noise3 + 5))))
+    {
+         while (create3_sensor_cliff(0) > (Cliff.white0  - (Cliff.noise0 + 5))) 
+         {
+             create3_velocity_set_components (0.02, -0.1);
+         }
+         while (create3_sensor_cliff(3) > (Cliff.white3  - (Cliff.noise3 + 5))) 
+         {
+             create3_velocity_set_components (0.02, 0.1);
+         }
+    }    
+}
+
