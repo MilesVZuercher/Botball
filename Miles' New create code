@@ -8,13 +8,15 @@ typedef struct
     int white0, white1, white2, white3; 
     int noise0, noise1, noise2, noise3; 
 } CliffSensor;
-
+int Servo1 =0; 
 void SensorPrinter();
 void DriveUntilColor(int Color, CliffSensor, int sensor); 
 void Center(CliffSensor);
 int SpinUntilObject();
 void DriveUntilDistance(CliffSensor);
 void centerobject();
+void SpinUntilColor(int Color, CliffSensor Cliff, int sensor);
+int ColorFinder(CliffSensor Cliff, int sensor);
 CliffSensor BlackWhiteCalibration()
 {
     CliffSensor Cliff; 
@@ -216,90 +218,197 @@ CliffSensor BlackWhiteCalibration()
 }
 int main()
 {
+    
     enable_servos(); 
     create3_connect(); 
-    for(int p = get_servo_position(3); p < 1190; p++)
+    
+Servo1 = get_servo_position(1); 
+     int  i =0; 
+     set_servo_position(2,0); 
+    msleep(400);
+  if (Servo1 == 550) 
     {
-            set_servo_position(3, p); 
-        msleep(5);
     }
+    else 
+    {
+    while ( Servo1 > 550)
+         {
+       i--;
+      
+                set_servo_position(1, Servo1); 
+             Servo1 = Servo1 -10; 
+
+                 msleep(100);
+         }
+        while ( Servo1 < 550)
+         {
+       i++;
+               
+                set_servo_position(1, Servo1);
+                 msleep(100);
+            Servo1 = Servo1 +10; 
+        
+         }
+ 
+    }
+    printf("%i", Servo1); 
+    wait_for_light(1);
+    msleep(300); 
     CliffSensor Cliff = BlackWhiteCalibration();
-    while((create3_sensor_cliff(0) > (Cliff.white0  - (Cliff.noise0 + 5))) && (create3_sensor_cliff(3) > (Cliff.white3  - (Cliff.noise3 + 5))))
+    while((create3_sensor_cliff(0) > (Cliff.white0  - (Cliff.noise0 + 10))) && (create3_sensor_cliff(3) > (Cliff.white3  - (Cliff.noise3 + 10))))
     {
 
-        create3_velocity_set_components (.1, 0.3);
+        create3_velocity_set_components (-.1, 0.4);
 
     }    
     Center(Cliff);
     console_clear();
     puts("got to first black line");
-    DriveUntilColor(White, Cliff,3);
+    DriveUntilColor(White, Cliff,0);
     console_clear();
     puts("passed first black line");
-    DriveUntilColor(Black, Cliff,3);
+    DriveUntilColor(Black, Cliff,0);
     console_clear();
     puts(" reached second black line");
-    DriveUntilColor(White, Cliff,3);
-    SpinUntilObject();
+    
+     create3_drive_straight(.02,0.1);
+        puts(" smidge forward");
+    msleep(50); 
+     if ( ColorFinder(Cliff, 2) == White)
+    {
+       SpinUntilColor(Black, Cliff,2);
+         SpinUntilColor(White, Cliff,2);
+    }
+    else 
+    {
+         SpinUntilColor(White, Cliff,2);
+         SpinUntilColor(Black, Cliff,2);
+         SpinUntilColor(White, Cliff,2);
+    }
+    
+            puts("right before look"); 
+       create3_drive_straight(.05, 0.1);
+   while (get_object_center_y(3, 0) > 0 )
+   {
+         create3_velocity_set_components (.05, 0);
+       console_clear(); 
+       puts("still see it"); 
+   }
+int count = seconds();
+       
+   
+   
     DriveUntilDistance(Cliff);
-    /*
-       for (int i =0; i < 60; i++)
-     {
-                  camera_update();
-                set_servo_position(3, 800 - (i * 10)); 
-        create3_velocity_set_components (0.005, 0);
-                 msleep(25);
-           
-            }
-centerobject();
-    int i = 0; 
-   while(1)
-     {
+ // everything above works 
+   
+         create3_drive_straight(-.16, 0.1);
+         create3_drive_straight(0, 0.1);
+    console_clear(); 
+        puts("smidge back");
+
+ if (Servo1 == 1700) 
+    {
+    }
+    else 
+    {
+    while ( Servo1 > 1700)
+         {
+       i--;
+      
+                set_servo_position(1, Servo1); 
+             Servo1 = Servo1 -10; 
+
+                 msleep(100);
+         }
+        while ( Servo1 < 1700)
+         {
        i++;
-                  camera_update();
-                set_servo_position(3, 300 + (i * 10)); 
-        create3_velocity_set_components (-0.0003, 0);
-                 msleep(10);
-           
-            }
-            */
-    int i = 0; 
-       while(i < 25)
-     {
-       i++;
-                  camera_update();
-                set_servo_position(3, 790 + (i * 10)); 
-        create3_velocity_set_components (-0.003, 0);
-                 msleep(10);
-           
-            }
-    i = 0; 
-          while(i < 5)
-     {
-       i++;
-                  camera_update();
-                set_servo_position(2,  350 + (i * 10)); 
+               
+                set_servo_position(1, Servo1);
+                 msleep(100);
+            Servo1 = Servo1 +10; 
         
-                 msleep(25);
-           
-            }
-    centerobject();
-    
-     while ( analog(0) <920 )
-{
+         }
  
-  create3_velocity_set_components (.1, 0);
-     }
+    }
+          if (Servo1 == 1600)
+    {
+    }
+    else 
+    {
+    while ( Servo1 > 1600)
+         {
+       i--;
+      
+                set_servo_position(1, Servo1); 
+             Servo1 = Servo1 -10; 
+
+                 msleep(100);
+         }
+        while ( Servo1 < 1600)
+         {
+       i++;
+               
+                set_servo_position(1, Servo1);
+                 msleep(100);
+            Servo1 = Servo1 +10; 
+        
+         }  
+    }
     
-        while(i < 20)
+    puts("was centered");
+   if (Servo1 == 1390)
+    {
+    }
+    else 
+    {
+    while ( Servo1 > 1390)
+         {
+       i--;
+      
+                set_servo_position(1, Servo1); 
+             Servo1 = Servo1 -10; 
+
+                 msleep(100);
+         }
+        while ( Servo1 < 1390)
+         {
+       i++;
+               
+                set_servo_position(1, Servo1);
+                 msleep(100);
+            Servo1 = Servo1 +10; 
+        
+         }  
+    }
+   
+
+        while(i < 40)
      {
        i++;
-                  camera_update();
+                 
                 set_servo_position(2, 400 - (i * 10)); 
         
                  msleep(25);
            
             }
+ DriveUntilColor(Black, Cliff,0);   
+    create3_drive_straight(.04, 0.1);
+         create3_drive_straight(0, 0.1);
+ 
+  int time = seconds(); 
+    console_clear(); 
+    printf("%lf\n", seconds());
+    puts("got to the spin"); 
+    
+
+        console_clear(); 
+      
+      
+                set_servo_position(2, 400); 
+        
+                 msleep(1000);
+           
     
     disable_servos();
     create3_wait(); 
@@ -329,31 +438,31 @@ void DriveUntilColor(int Color, CliffSensor Cliff, int sensor)
     {       switch (sensor)
     {
         case 0:
-            while ((Cliff.white0  - (Cliff.noise0 + 5)) > create3_sensor_cliff(0) )
+            while ((Cliff.white0  - (Cliff.noise0 + 10)) > create3_sensor_cliff(0) )
             { 
                 SensorPrinter();
-                create3_velocity_set_components (0.1, 0);
+                create3_velocity_set_components (-0.1, 0);
             }
             break; 
         case 1:
-            while ((Cliff.white1  -  (Cliff.noise1 + 5 )) > create3_sensor_cliff(1) ) 
+            while ((Cliff.white1  -  (Cliff.noise1 + 10 )) > create3_sensor_cliff(1) ) 
             {
                 SensorPrinter();
-                create3_velocity_set_components (0.1, 0);
+                create3_velocity_set_components (-0.1, 0);
             }
             break; 
         case 2:
-            while ((Cliff.white2  - (Cliff.noise2 + 5)) > create3_sensor_cliff(2) )
+            while ((Cliff.white2  - (Cliff.noise2 + 10)) > create3_sensor_cliff(2) )
             {      
                 SensorPrinter();
-                create3_velocity_set_components (0.1, 0);
+                create3_velocity_set_components (-0.1, 0);
             }
             break; 
         case 3:
-            while ((Cliff.white3  - (Cliff.noise3 + 5)) > create3_sensor_cliff(3) )
+            while ((Cliff.white3  - (Cliff.noise3 + 10)) > create3_sensor_cliff(3) )
             {
                 SensorPrinter();
-                create3_velocity_set_components (0.1, 0);
+                create3_velocity_set_components (-0.1, 0);
             }
             break; 
         default:
@@ -368,30 +477,30 @@ void DriveUntilColor(int Color, CliffSensor Cliff, int sensor)
         {       switch (sensor)
         {
             case 0:
-                while (create3_sensor_cliff(0) > (Cliff.white0  - (Cliff.noise0 + 5)))
+                while (create3_sensor_cliff(0) > (Cliff.white0  - (Cliff.noise0 + 10)))
                 {
                     SensorPrinter();
-                    create3_velocity_set_components (0.1, 0);
+                    create3_velocity_set_components (-0.1, 0);
                 }
                 break; 
             case 1:
-                while (  create3_sensor_cliff(1) >  Cliff.white1  - (Cliff.noise1 + 5))
+                while (  create3_sensor_cliff(1) >  Cliff.white1  - (Cliff.noise1 + 10))
                 {
                     SensorPrinter();
-                    create3_velocity_set_components (0.1, 0);
+                    create3_velocity_set_components (-0.1, 0);
                 }
                 break; 
             case 2:
-                while (create3_sensor_cliff(2) > (Cliff.white2  - (Cliff.noise2 + 5))  )
+                while (create3_sensor_cliff(2) > (Cliff.white2  - (Cliff.noise2 + 10))  )
                 {
                     SensorPrinter();
-                    create3_velocity_set_components (0.1, 0);
+                    create3_velocity_set_components (-0.1, 0);
                 }
                 break; 
             case 3:
-                while (create3_sensor_cliff(3) > (Cliff.white3  - (Cliff.noise3 + 5)) )
+                while (create3_sensor_cliff(3) > (Cliff.white3  - (Cliff.noise3 + 10)) )
                 {		 SensorPrinter();
-                 create3_velocity_set_components (0.1, 0);
+                 create3_velocity_set_components (-0.1, 0);
                 }
                 break; 
             default:
@@ -407,15 +516,15 @@ void DriveUntilColor(int Color, CliffSensor Cliff, int sensor)
 
 void Center(CliffSensor Cliff)
 {
-    while((create3_sensor_cliff(0) > (Cliff.white0  - (Cliff.noise0 + 5))) ||(create3_sensor_cliff(3) > (Cliff.white3  - (Cliff.noise3 + 5))))
+    while((create3_sensor_cliff(0) > (Cliff.white0  - (Cliff.noise0 + 10))) ||(create3_sensor_cliff(3) > (Cliff.white3  - (Cliff.noise3 + 10))))
     {
-        while (create3_sensor_cliff(0) > (Cliff.white0  - (Cliff.noise0 + 5))) 
+        while (create3_sensor_cliff(0) > (Cliff.white0  - (Cliff.noise0 + 10))) 
         {
-            create3_velocity_set_components (0.02, -0.1);
+            create3_velocity_set_components (-0.02, 0.1);
         }
-        while (create3_sensor_cliff(3) > (Cliff.white3  - (Cliff.noise3 + 5))) 
+        while (create3_sensor_cliff(3) > (Cliff.white3  - (Cliff.noise3 + 10))) 
         {
-            create3_velocity_set_components (0.02, 0.1);
+            create3_velocity_set_components (-0.02, -0.1);
         }
     }    
 }
@@ -427,19 +536,15 @@ int SpinUntilObject()
     create3_connect(); 
     enable_servos();
 
-   for (int i = 0; i< 45; i++)
-    {
-     set_servo_position(3, 1350 - (i*10));
-     msleep(50);
 
-    }
 
-     
+     rectangle object_bounding_box = get_object_bbox(2, 0);
     int yvalue = 0;
 int time  = seconds(); 
     yvalue = get_object_center_y(0, 0);
     int xvalue = get_object_center_x(0, 0);
-    while ( get_object_area(0,0) < 10000 && get_object_area(2,0) < 3000 )
+    while ( get_object_area(2,0) < 10000  && analog(1) < 1000 && analog(1) < 700 && get_object_area(3,0) < 10000 && object_bounding_box.width > 100 && object_bounding_box.height > 60)
+        
 	{
            if ( time + .1 < seconds())
             {
@@ -471,23 +576,43 @@ void DriveUntilDistance(CliffSensor Cliff)
 {
     camera_open();
         enable_servos();
-   for (int i = 0; i< 10; i++)
-    {
-       
-     set_servo_position(3, 790 + (i*10));
-     msleep(50);
-
-    }
 	
-   for (int i = 0; i< 5; i++)
+   for (int i = 0; i< 22; i++)
     {
      set_servo_position(2, 350 + (i*10));
      msleep(50);
 
     }
-    msleep(1000); 
+
+    
+    
+    
+  int  i =0; 
+    if (Servo1 == 1700) 
+    {
+    }
+    else 
+    {
+    while ( Servo1 > 1700)
+         {
+       i--;
+      
+                set_servo_position(1, Servo1); 
+             Servo1 = Servo1 -10; 
+                 msleep(100);
+         }
+        while ( Servo1 < 1700)
+         {
+       i++;
+               
+                set_servo_position(1, Servo1);
+                 msleep(100);
+            Servo1 = Servo1 +10; 
+         }
+         
+    }
     int time = seconds(); 
-while ( analog(0) <850 )
+while ( create3_sensor_bump(0) == 0 && create3_sensor_bump(1) == 0 && create3_sensor_bump(2) == 0 && create3_sensor_bump(3) == 0)
 {
        if ( time + .1 < seconds())
             {
@@ -497,22 +622,23 @@ while ( analog(0) <850 )
             time = seconds(); 
         	}
   create3_velocity_set_components (.1, 0);
-    if ( create3_sensor_cliff(1) > (Cliff.white1  - (Cliff.noise1 + 5)) && create3_sensor_cliff(2) > (Cliff.white2  - (Cliff.noise2 + 5)))
+    if ( create3_sensor_cliff(1) > (Cliff.white1  - (Cliff.noise1 + 10)) && create3_sensor_cliff(2) > (Cliff.white2  - (Cliff.noise2 + 10)))
     {
     }
     else
     {
-    while ( get_object_center_x(2, 0) < 317)
+    while ( (Cliff.white1  - (Cliff.noise1 + 10)) > create3_sensor_cliff(1) && create3_sensor_cliff(2) > (Cliff.white2  - (Cliff.noise2 + 10)))
     {
+   
           camera_update();
         create3_velocity_set_components (0, 0.3);
-          printf(" x value is %i",  get_object_center_x(0, 0)); 
+          printf(" x value is %i",  get_object_center_x(2, 0)); 
     }
-      while ( get_object_center_x(2, 0) > 323)
+      while ( (Cliff.white2  - (Cliff.noise2 + 7)) > create3_sensor_cliff(2) && create3_sensor_cliff(1) > (Cliff.white1  - (Cliff.noise1 + 10)) )
     {
           camera_update();
         create3_velocity_set_components (0, -0.3);
-          printf(" x value is %i",  get_object_center_x(0, 0)); 
+          printf(" x value is %i",  get_object_center_x(2, 0)); 
     }
     }
 /*
@@ -536,18 +662,165 @@ void centerobject()
         camera_open();
  // while (  get_object_center_x(0, 0) != 320)
  // {
-        while ( get_object_center_x(2, 0) < 320)
+        if(get_object_center_x(2, 0) == -1 )
     {
-          camera_update();
-        create3_velocity_set_components (0, 0.1);
-          printf(" x value is %i",  get_object_center_x(2, 0)); 
+   console_clear(); 
+            puts("not Seeing anything");
+            for (int i = 0; i< 3; i++)
+            {
+            create3_velocity_set_components (0, -0.1);
+        }
     }
-      while ( get_object_center_x(2, 0) > 320)
+    else 
+    {
+      while( get_object_center_x(2, 0) < 320 && get_object_center_x(2, 0) > -1 )
     {
           camera_update();
         create3_velocity_set_components (0, -0.1);
-          printf(" x value is %i",  get_object_center_x(2, 0)); 
+          printf(" x value is %i\n",  get_object_center_x(2, 0)); 
     }
+     while( get_object_center_x(2, 0) > 320)
+    {
+          camera_update();
+        create3_velocity_set_components (0, 0.1);
+          printf(" x value is %i\n",  get_object_center_x(2, 0)); 
+    }
+    }
+	
   //}
        camera_close();
 }
+void SpinUntilColor(int Color, CliffSensor Cliff, int sensor)
+{
+
+    if (Color == White)
+    {       switch (sensor)
+    {
+        case 0:
+            while ((Cliff.white0  - (Cliff.noise0 + 10)) > create3_sensor_cliff(0) )
+            { 
+                SensorPrinter();
+                create3_velocity_set_components (0, -0.1);
+            }
+            break; 
+        case 1:
+            while ((Cliff.white1  -  (Cliff.noise1 + 10)) > create3_sensor_cliff(1) ) 
+            {
+                SensorPrinter();
+                create3_velocity_set_components (0, -0.1);
+            }
+            break; 
+        case 2:
+            while ((Cliff.white2  - (Cliff.noise2 + 10)) > create3_sensor_cliff(2) )
+            {      
+                SensorPrinter();
+                create3_velocity_set_components (0, -0.1);
+            }
+            break; 
+        case 3:
+            while ((Cliff.white3  - (Cliff.noise3 + 10)) > create3_sensor_cliff(3) )
+            {
+                SensorPrinter();
+                create3_velocity_set_components (0, -0.1);
+            }
+            break; 
+        default:
+            puts("sorry not a sensor");
+            break;
+                                                   }
+    }
+    if (Color == Black)
+    {
+        if (Color == Black)
+        {       switch (sensor)
+        {
+            case 0:
+                while (create3_sensor_cliff(0) > (Cliff.white0  - (Cliff.noise0 + 10)))
+                {
+                    SensorPrinter();
+                    create3_velocity_set_components (0, -0.1);
+                }
+                break; 
+            case 1:
+                while (  create3_sensor_cliff(1) >  Cliff.white1  - (Cliff.noise1 + 10))
+                {
+                    SensorPrinter();
+                    create3_velocity_set_components (0, -0.1);
+                }
+                break; 
+            case 2:
+                while (create3_sensor_cliff(2) > (Cliff.white2  - (Cliff.noise2 + 10))  )
+                {
+                    SensorPrinter();
+                    create3_velocity_set_components (0, -0.1);
+                }
+                break; 
+            case 3:
+                while (create3_sensor_cliff(3) > (Cliff.white3  - (Cliff.noise3 + 10)) )
+                {		 SensorPrinter();
+                 create3_velocity_set_components (0, -0.1);
+                }
+                break; 
+            default:
+                puts("sorry not a sensor");
+                break;
+
+        }
+        }
+    } 
+
+}
+int ColorFinder(CliffSensor Cliff, int sensor)
+{
+
+         switch (sensor)
+    {
+        case 0:
+            if ((Cliff.white0  - (Cliff.noise0 + 10)) > create3_sensor_cliff(0) )
+            {
+    return Black; 
+            }
+			else 
+            {
+             return White; 
+            }
+            break; 
+        case 1:
+           if ((Cliff.white1  -  (Cliff.noise1 + 10 )) > create3_sensor_cliff(1) ) 
+            {
+                return Black;    
+            }
+			else 
+            {
+             return White; 
+            }
+            break; 
+        case 2:
+           if ((Cliff.white2  - (Cliff.noise2 +  10)) > create3_sensor_cliff(2) )
+            {      
+             return Black;  
+            }
+			 else 
+            {
+             return White; 
+            }
+            break; 
+        case 3:
+          if ((Cliff.white3  - (Cliff.noise3 + 10)) > create3_sensor_cliff(3) )
+            {
+             return Black;  
+            }
+		 else 
+            {
+             return White; 
+            }
+            break; 
+        default:
+            puts("sorry not a sensor");
+            break;
+
+         }
+                     return 0; 
+    }
+    
+
